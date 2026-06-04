@@ -8,6 +8,10 @@
 
 void termbox_test();
 void dibujar_mapa();
+void caminar();
+
+//variables
+int win = 0;
 
 //mapa de 60x60
 #define MAPA_FILAS 180
@@ -211,20 +215,68 @@ char mapa [MAPA_FILAS][MAPA_COLUMNAS] =
 //-----------------------------------------------------------------------------------------------------------------------//
 int main() 
 {
-  dibujar_mapa();
+  tb_init();
+  while (win != 1)
+  {
+    caminar();
+    dibujar_mapa();
+  }
+  tb_shutdown();
 }
 //-----------------------------------------------------------------------------------------------------------------------//
 void dibujar_mapa()
 {
-  //imprimir el laberinto
+  tb_clear();
   for (int i = 0; i < SECCION_TAM; i++) //recorrer las filas
   {
     printf("\t");
     for (int j = 0; j < MAPA_COLUMNAS; j++) //recorrer e imprimir los elementos de las columnas propios de la fila
     {
-      printf("\033[38;2;175;120;210m%c \033[0m", mapa[i][j]);
+      tb_set_cell(j*2,i,mapa[i][j],TB_GREEN,TB_DEFAULT);
     }
-    printf("\n");
+  }
+  tb_present();
+}
+//-----------------------------------------------------------------------------------------------------------------------//
+void caminar()
+{
+  struct tb_event ev;
+
+  while (1)
+  {
+    tb_poll_event(&ev);
+    if (ev.type == TB_EVENT_KEY)
+    {
+      if (ev.ch)
+      {
+        switch (ev.ch)
+        {
+        case 'w':
+          //printf("adelante\n");
+          break;
+        
+        case 'a':
+         // printf("izq\n");
+          break;
+
+        case 's':
+          //printf("atras\n");
+          break;
+
+        case 'd':
+          //printf("der\n");
+          break;
+
+        case 'q':
+        win = 1;
+        break;
+        
+        default:
+          break;
+        }
+        break;
+      } 
+    }
   }
 }
 //-----------------------------------------------------------------------------------------------------------------------//
