@@ -6,15 +6,6 @@
 #include <termios.h>
 #include <unistd.h>
 
-void termbox_test();
-void dibujar_mapa();
-void caminar();
-
-//variables
-int win = 0;
-int jugador_posX = 1;
-int jugador_posY = 2;
-
 //mapa de 60x60
 #define MAPA_FILAS 180
 #define MAPA_COLUMNAS 20
@@ -22,27 +13,47 @@ int jugador_posY = 2;
 //seccion de 20x20
 #define SECCION_TAM 20
 
-char mapa [MAPA_FILAS][MAPA_COLUMNAS] =
+//funciones
+void termbox_test();
+void dibujar_mapa(char mapa[MAPA_FILAS][MAPA_COLUMNAS]);
+void caminar(char mapa[MAPA_FILAS][MAPA_COLUMNAS]);
+int contar_monedas(char mapa[MAPA_FILAS][MAPA_COLUMNAS]);
+void cambiar_de_zona(char mapa[MAPA_FILAS][MAPA_COLUMNAS]);
+
+//rutinas en nasm
+extern int contar_monedas_NASM(char *inicioMapa,int totalCeldas,char monedaChar);
+
+//variables
+int win = 0;
+int jugador_posY = 5;
+int jugador_posX = 2;
+int monedas_totales = 0;
+int monedas_colectadas = 0;
+
+int zona_top = 0;
+int zona_fondo = 20;
+
+char mapa1 [MAPA_FILAS][MAPA_COLUMNAS] =
 {
     {'1','#','#','#','#','#','#','#','#','#','#','#','#','#','#','#','#','#','#','#'},
+    {'#','$',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ','#'},
+    {'#',' ',' ',' ',' ',' ','#',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ','#'},
+    {'#',' ',' ',' ',' ',' ','#',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ','#'},
     {'#',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ','#'},
     {'#',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ','#'},
     {'#',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ','#'},
+    {'#',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ','>'},
+    {'#',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ','#'},
+    {'#',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ','#'},
+    {'#',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ','>',' ','#'},
     {'#',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ','#'},
     {'#',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ','#'},
     {'#',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ','#'},
+    {'#',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ','$','$',' ',' ',' ',' ',' ','#'},
     {'#',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ','#'},
     {'#',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ','#'},
     {'#',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ','#'},
-    {'#',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ','#'},
-    {'#',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ','#'},
-    {'#',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ','#'},
-    {'#',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ','#'},
-    {'#',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ','#'},
-    {'#',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ','#'},
-    {'#',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ','#'},
-    {'#',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ','#'},
-    {'#',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ','#'},
+    {'#',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ','$','#'},
     {'#','#','#','#','#','#','#','#','#','#','#','#','#','#','#','#','#','#','#','#'},
 
     {'2','#','#','#','#','#','#','#','#','#','#','#','#','#','#','#','#','#','#','#'},
@@ -217,40 +228,51 @@ char mapa [MAPA_FILAS][MAPA_COLUMNAS] =
 //-----------------------------------------------------------------------------------------------------------------------//
 int main() 
 {
+  monedas_totales = contar_monedas_NASM(&mapa1[0][0],MAPA_FILAS*MAPA_COLUMNAS,'$');
+
   tb_init();
+
   while (win != 1)
   {
-    caminar();
-    dibujar_mapa();
+    caminar(mapa1);
+    dibujar_mapa(mapa1);
   }
   tb_shutdown();
+
+  printf("\n\nmt: %i\nmc: %i\n",monedas_totales,monedas_colectadas);
 }
 //-----------------------------------------------------------------------------------------------------------------------//
-void dibujar_mapa()
+void dibujar_mapa(char mapa[MAPA_FILAS][MAPA_COLUMNAS])
 {
   tb_clear();
-  for (int i = 0; i < SECCION_TAM; i++) //recorrer las filas
+
+  int x = 0, y = 20;
+
+  //recorrer e imprimir una seccion de 20x20 del mapa 
+  for (int i = x; i < y; i++)
   {
-    printf("\t");
-    for (int j = 0; j < MAPA_COLUMNAS; j++) //recorrer e imprimir los elementos de las columnas propios de la fila
+    for (int j = 0; j < MAPA_COLUMNAS; j++)
     {
-      if (i==jugador_posY && j==jugador_posX)
+      if (i==jugador_posX && j==jugador_posY)
       {
-        tb_set_cell(j*2,i,'P',TB_WHITE,TB_DEFAULT);
+        tb_set_cell(y*2,x,'P',TB_WHITE,TB_DEFAULT);
       }
       else
       {
-        tb_set_cell(j*2,i,mapa[i][j],TB_GREEN,TB_DEFAULT);
+        tb_set_cell(y*2,x,mapa[i][j],TB_GREEN,TB_DEFAULT);
       }
-     
+      //y++;
     }
+    //x++;
   }
   tb_present();
 }
 //-----------------------------------------------------------------------------------------------------------------------//
-void caminar()
+void caminar(char mapa[MAPA_FILAS][MAPA_COLUMNAS])
 {
   struct tb_event ev;
+  int sig_JPosX = jugador_posX;
+  int sig_JPosY = jugador_posY;
 
   while (1)
   {
@@ -262,28 +284,24 @@ void caminar()
         switch (ev.ch)
         {
         case 'w':
-          //printf("adelante\n");
-          jugador_posY--;
+          sig_JPosX--;
           break;
         
         case 'a':
-         // printf("izq\n");
-         jugador_posX--;
+          sig_JPosY--;
           break;
 
         case 's':
-          //printf("atras\n");
-          jugador_posY++;
+          sig_JPosX++;
           break;
 
         case 'd':
-          //printf("der\n");
-          jugador_posX++;
+          sig_JPosY++;
           break;
 
         case 'q':
-        win = 1;
-        break;
+          win = 1;
+          break;
         
         default:
           break;
@@ -291,6 +309,32 @@ void caminar()
         break;
       } 
     }
+  }
+
+  switch (mapa[sig_JPosX][sig_JPosY])
+  {
+  case '#':
+    break;
+
+  case '$':
+    monedas_colectadas++;
+    mapa[sig_JPosX][sig_JPosY] = ' ';
+    jugador_posX = sig_JPosX;
+    jugador_posY = sig_JPosY;
+    break;
+
+  case ' ':
+    jugador_posX = sig_JPosX;
+    jugador_posY = sig_JPosY;
+    break;
+
+  case '>':
+    zona_top += 20;
+    zona_fondo += 20;
+    break;
+
+  default:
+    break;
   }
 }
 //-----------------------------------------------------------------------------------------------------------------------//
@@ -318,4 +362,28 @@ void termbox_test()
   return 0;
 }
 //-----------------------------------------------------------------------------------------------------------------------//
+int contar_monedas(char mapa[MAPA_FILAS][MAPA_COLUMNAS])
+{
+  int cuenta  = 0;
+  for (int i = zona_top; i < zona_fondo; i++)//
+  {
+    for (int j = 0; j < MAPA_COLUMNAS; j++)
+    {
+      if (mapa[i][j] == '$')
+      {
+        cuenta++;
+      }
+    }
+  }
+  return cuenta;
+}
+//-----------------------------------------------------------------------------------------------------------------------//
+void cambiar_de_zona(char mapa[MAPA_FILAS][MAPA_COLUMNAS])
+{
+
+}
+//-----------------------------------------------------------------------------------------------------------------------//
+
+//-----------------------------------------------------------------------------------------------------------------------//
+
 //-----------------------------------------------------------------------------------------------------------------------//
