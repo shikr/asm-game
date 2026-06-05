@@ -5,6 +5,11 @@
 #include <stdlib.h>
 #include <termios.h>
 #include <unistd.h>
+//nasm -f elf64 rutinas.asm -o rutinas.o && gcc -c main.c -o main.o && gcc main.o rutinas.o -o juego
+//nasm -f elf64 rutinas.asm -o rutinas.o
+//gcc -c main.c -o main.o
+//gcc main.o rutinas.o -o juego
+
 
 //mapa de 60x60
 #define MAPA_FILAS 180
@@ -21,12 +26,12 @@ int contar_monedas(char mapa[MAPA_FILAS][MAPA_COLUMNAS]);
 void cambiar_de_zona(char mapa[MAPA_FILAS][MAPA_COLUMNAS]);
 
 //rutinas en nasm
-extern int contar_monedas_NASM(char *inicioMapa,int totalCeldas,char monedaChar);
+int contar_monedas_NASM(char *inicioMapa,int totalCeldas,char monedaChar);
 
 //variables
 int win = 0;
-int jugador_posY = 5;
-int jugador_posX = 2;
+int jugador_posX = 5;
+int jugador_posY = 2;
 int monedas_totales = 0;
 int monedas_colectadas = 0;
 
@@ -246,24 +251,26 @@ void dibujar_mapa(char mapa[MAPA_FILAS][MAPA_COLUMNAS])
 {
   tb_clear();
 
-  int x = 0, y = 20;
+  int x = 0;
+  int y = 0;
 
   //recorrer e imprimir una seccion de 20x20 del mapa 
-  for (int i = x; i < y; i++)
+  for (int i = zona_top; i < zona_fondo; i++) //recorre las primeras 20 filas de la seccion
   {
-    for (int j = 0; j < MAPA_COLUMNAS; j++)
+    for (int j = 0; j < MAPA_COLUMNAS; j++) //recorre las 20 columnas de la seccion
     {
-      if (i==jugador_posX && j==jugador_posY)
+      if (i==jugador_posY && j==jugador_posX)
       {
-        tb_set_cell(y*2,x,'P',TB_WHITE,TB_DEFAULT);
+        tb_set_cell(x*2,y,'P',TB_WHITE,TB_DEFAULT);
       }
       else
       {
-        tb_set_cell(y*2,x,mapa[i][j],TB_GREEN,TB_DEFAULT);
+        tb_set_cell(x*2,y,mapa[i][j],TB_GREEN,TB_DEFAULT);
       }
-      //y++;
+      x++;
     }
-    //x++;
+    x=0;
+    y++;
   }
   tb_present();
 }
@@ -284,19 +291,19 @@ void caminar(char mapa[MAPA_FILAS][MAPA_COLUMNAS])
         switch (ev.ch)
         {
         case 'w':
-          sig_JPosX--;
+          sig_JPosY--;
           break;
         
         case 'a':
-          sig_JPosY--;
+          sig_JPosX--;
           break;
 
         case 's':
-          sig_JPosX++;
+          sig_JPosY++;
           break;
 
         case 'd':
-          sig_JPosY++;
+          sig_JPosX++;
           break;
 
         case 'q':
@@ -311,14 +318,14 @@ void caminar(char mapa[MAPA_FILAS][MAPA_COLUMNAS])
     }
   }
 
-  switch (mapa[sig_JPosX][sig_JPosY])
+  switch (mapa[sig_JPosY][sig_JPosX])
   {
   case '#':
     break;
 
   case '$':
     monedas_colectadas++;
-    mapa[sig_JPosX][sig_JPosY] = ' ';
+    mapa[sig_JPosY][sig_JPosX] = ' ';
     jugador_posX = sig_JPosX;
     jugador_posY = sig_JPosY;
     break;
@@ -331,6 +338,8 @@ void caminar(char mapa[MAPA_FILAS][MAPA_COLUMNAS])
   case '>':
     zona_top += 20;
     zona_fondo += 20;
+    jugador_posX = 1;
+    jugador_posY = 21;
     break;
 
   default:
@@ -338,34 +347,10 @@ void caminar(char mapa[MAPA_FILAS][MAPA_COLUMNAS])
   }
 }
 //-----------------------------------------------------------------------------------------------------------------------//
-void termbox_test()
-{
-  struct tb_event ev;
-  int y = 0;
-
-  tb_init();
-
-  tb_printf(0, y++, TB_GREEN, 0, "hello from termbox");
-  tb_printf(0, y++, 0, 0, "width=%d height=%d", tb_width(), tb_height());
-  tb_printf(0, y++, 0, 0, "press any key...");
-  tb_present();
-
-  tb_poll_event(&ev);
-
-  tb_printf(0, y, 0, 0, "event type=%d key=%d ch=%c", ev.type, ev.key, ev.ch);
-  tb_printf(0, y - 1, 0, 0, "press any key to quit...");
-  tb_present();
-
-  tb_poll_event(&ev);
-  tb_shutdown();
-
-  return 0;
-}
-//-----------------------------------------------------------------------------------------------------------------------//
 int contar_monedas(char mapa[MAPA_FILAS][MAPA_COLUMNAS])
 {
   int cuenta  = 0;
-  for (int i = zona_top; i < zona_fondo; i++)//
+  for (int i = zona_top; i < SECCION_TAM; i++)
   {
     for (int j = 0; j < MAPA_COLUMNAS; j++)
     {
@@ -378,10 +363,7 @@ int contar_monedas(char mapa[MAPA_FILAS][MAPA_COLUMNAS])
   return cuenta;
 }
 //-----------------------------------------------------------------------------------------------------------------------//
-void cambiar_de_zona(char mapa[MAPA_FILAS][MAPA_COLUMNAS])
-{
 
-}
 //-----------------------------------------------------------------------------------------------------------------------//
 
 //-----------------------------------------------------------------------------------------------------------------------//
