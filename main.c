@@ -12,6 +12,8 @@ void caminar();
 
 //variables
 int win = 0;
+int jugador_posX = 1;
+int jugador_posY = 2;
 
 //mapa de 60x60
 #define MAPA_FILAS 180
@@ -232,7 +234,15 @@ void dibujar_mapa()
     printf("\t");
     for (int j = 0; j < MAPA_COLUMNAS; j++) //recorrer e imprimir los elementos de las columnas propios de la fila
     {
-      tb_set_cell(j*2,i,mapa[i][j],TB_GREEN,TB_DEFAULT);
+      if (i==jugador_posY && j==jugador_posX)
+      {
+        tb_set_cell(j*2,i,'P',TB_WHITE,TB_DEFAULT);
+      }
+      else
+      {
+        tb_set_cell(j*2,i,mapa[i][j],TB_GREEN,TB_DEFAULT);
+      }
+     
     }
   }
   tb_present();
@@ -253,18 +263,22 @@ void caminar()
         {
         case 'w':
           //printf("adelante\n");
+          jugador_posY--;
           break;
         
         case 'a':
          // printf("izq\n");
+         jugador_posX--;
           break;
 
         case 's':
           //printf("atras\n");
+          jugador_posY++;
           break;
 
         case 'd':
           //printf("der\n");
+          jugador_posX++;
           break;
 
         case 'q':
