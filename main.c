@@ -5,6 +5,7 @@
 #include <stdlib.h>
 #include <termios.h>
 #include <unistd.h>
+#include <stdbool.h>
 //nasm -f elf64 rutinas.asm -o rutinas.o && gcc -c main.c -o main.o && gcc main.o rutinas.o -o juego
 //nasm -f elf64 rutinas.asm -o rutinas.o
 //gcc -c main.c -o main.o
@@ -22,11 +23,12 @@
 void termbox_test();
 void dibujar_mapa(char mapa[MAPA_FILAS][MAPA_COLUMNAS]);
 void caminar(char mapa[MAPA_FILAS][MAPA_COLUMNAS]);
-int contar_monedas(char mapa[MAPA_FILAS][MAPA_COLUMNAS]);
 void cambiar_de_zona(char mapa[MAPA_FILAS][MAPA_COLUMNAS]);
 
 //rutinas en nasm
 int contar_monedas_NASM(char *inicioMapa,int totalCeldas,char monedaChar);
+bool validar_movimiento_NASM(char *inicioMapa,int totalColumnas,int nueva_fila,int nueva_columna);
+int calcular_puntaje_NASM(int monedas_colectadas,int total_pasos, int niveles_completados);
 
 //variables
 int win = 0;
@@ -34,6 +36,8 @@ int jugador_posX = 5;
 int jugador_posY = 2;
 int monedas_totales = 0;
 int monedas_colectadas = 0;
+int total_pasos = 0;
+int niveles_completados = 0;
 
 int zona_top = 0;
 int zona_fondo = 20;
@@ -318,10 +322,15 @@ void caminar(char mapa[MAPA_FILAS][MAPA_COLUMNAS])
     }
   }
 
+  //si es una pared, no se mueve a la nueva direccion
+  if(validar_movimiento_NASM(&mapa[0][0],MAPA_COLUMNAS,sig_JPosY,sig_JPosX))
+  {
+    return;
+  }
+
+  //si no es pared, entonces checar que es 
   switch (mapa[sig_JPosY][sig_JPosX])
   {
-  case '#':
-    break;
 
   case '$':
     monedas_colectadas++;
@@ -347,21 +356,7 @@ void caminar(char mapa[MAPA_FILAS][MAPA_COLUMNAS])
   }
 }
 //-----------------------------------------------------------------------------------------------------------------------//
-int contar_monedas(char mapa[MAPA_FILAS][MAPA_COLUMNAS])
-{
-  int cuenta  = 0;
-  for (int i = zona_top; i < SECCION_TAM; i++)
-  {
-    for (int j = 0; j < MAPA_COLUMNAS; j++)
-    {
-      if (mapa[i][j] == '$')
-      {
-        cuenta++;
-      }
-    }
-  }
-  return cuenta;
-}
+
 //-----------------------------------------------------------------------------------------------------------------------//
 
 //-----------------------------------------------------------------------------------------------------------------------//

@@ -2,8 +2,11 @@ bits 64
 default rel
 
 global contar_monedas_NASM
+global validar_movimiento_NASM
+global calcular_puntaje_NASM
 section .text
 
+;;---------------------------------------------------------------------------;;
 contar_monedas_NASM: ;esi=totalCeldas --- dl=monedaChar --- rdi=inicioMapa
     xor eax, eax ;contador de monedas
     xor ecx, ecx ;contador para recorrer la matriz
@@ -26,3 +29,43 @@ contar_monedas_NASM: ;esi=totalCeldas --- dl=monedaChar --- rdi=inicioMapa
 
     .fin:
         ret
+;;---------------------------------------------------------------------------;;
+validar_movimiento_NASM: ;rdi=inicioMapa --- esi=columnas --- edx=nuevaFila --- ecx=nuevaColumna
+    ;calcular el offset de la nueva posicion (nuevaFila * columnas)+nuevaColumna
+    mov eax, edx
+    imul eax, esi
+    add eax, ecx
+
+    ;guarda el caracter en al
+    mov al, [rdi+rax]
+    cmp al,'#' ;checa si es pared
+    je .true ;si si es devuelve 1
+
+    mov eax,0 ;si no, devuelve 0
+    ret 
+
+    .true:
+        mov eax,1
+        ret
+;;---------------------------------------------------------------------------;;
+calcular_puntaje_NASM: ;edi=monedasColectadas --- esi=pasos --- edx=niveles | formula: cada moneda es un punto, por cada 30 pasos se resta una moneda y por cada nivel se multiplica el puntaje por 2
+    ;calcular lo que se resta por pasos
+    xor eax, eax
+    xor edx, edx
+    mov eax,esi
+    mov ecx, 30
+    div ecx
+
+    sub edi,eax
+
+    ;calcular multiplicador por niveles
+    xor eax, eax
+    xor edx, edx
+    mov eax,2
+    mul edx
+    ;aplicar multiplicador
+    mul edi
+    mov eax, edi
+
+    ret
+;;---------------------------------------------------------------------------;;
