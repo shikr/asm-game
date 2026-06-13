@@ -33,7 +33,7 @@ int calcular_puntaje_NASM(int monedas_colectadas,int total_pasos, int niveles_co
 //variables
 int win = 0;
 int jugador_posX = 5;
-int jugador_posY = 2;
+int jugador_posY = 4;
 int monedas_totales = 0;
 int monedas_colectadas = 0;
 int total_pasos = 0;
@@ -43,6 +43,10 @@ int puntaje = 0;
 int zona_top = 0;
 int zona_fondo = 20;
 
+//mapa
+//1  4  7
+//2  5  8
+//3  6  9
 char mapa1 [MAPA_FILAS][MAPA_COLUMNAS] =
 {
     {'1','#','#','#','#','#','#','#','#','#','#','#','#','#','#','#','#','#','#','#'},
@@ -72,7 +76,7 @@ char mapa1 [MAPA_FILAS][MAPA_COLUMNAS] =
     {'#',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ','#'},
     {'#',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ','#'},
     {'#',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ','#'},
-    {'#',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ','#'},
+    {'<',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ','#'},
     {'#',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ','#'},
     {'#',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ','#'},
     {'#',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ','#'},
@@ -116,7 +120,7 @@ char mapa1 [MAPA_FILAS][MAPA_COLUMNAS] =
     {'#',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ','#'},
     {'#',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ','#'},
     {'#',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ','#'},
-    {'#',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ','#'},
+    {'<',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ','#'},
     {'#',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ','#'},
     {'#',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ','#'},
     {'#',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ','#'},
@@ -349,11 +353,22 @@ void caminar(char mapa[MAPA_FILAS][MAPA_COLUMNAS])
     jugador_posY = sig_JPosY;
     break;
 
-  case '>':
-    zona_top += 20;
-    zona_fondo += 20;
+  case '>': //avanzar de zona en horizontal
+    //reajustar limites
+    zona_top += 20*3;
+    zona_fondo += 20*3;
+    //poner al jugador en la posicion inicial de la zona
     jugador_posX = 1;
-    jugador_posY = 21;
+    jugador_posY += 20*3;
+    break;
+
+  case '<': //retroceder de zona en horizontal
+    //reajustar limites
+    zona_top -= 20*3; 
+    zona_fondo -= 20*3;
+    //poner al jugador en la posicion inicial de la zona
+    jugador_posX = 18;
+    jugador_posY -= 20*3;
     break;
 
   default:

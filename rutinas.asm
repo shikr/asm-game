@@ -58,8 +58,8 @@ calcular_puntaje_NASM: ;edi=monedasColectadas --- esi=pasos --- edx=niveles | fo
     xor eax, eax
     xor edx, edx
     mov eax, r9d ;eax = pasos
-    mov ecx, 30 ;ecx = 30
-    div ecx ;eax = pasos/30
+    mov ecx, 100 ;ecx = 100
+    div ecx ;eax = pasos/100
     cmp eax, r8d ;si el puntaje queda negativo solo lo  hace 0
     jg .hacerCero
 
