@@ -48,24 +48,34 @@ validar_movimiento_NASM: ;rdi=inicioMapa --- esi=columnas --- edx=nuevaFila --- 
         mov eax,1
         ret
 ;;---------------------------------------------------------------------------;;
-calcular_puntaje_NASM: ;edi=monedasColectadas --- esi=pasos --- edx=niveles | formula: cada moneda es un punto, por cada 30 pasos se resta una moneda y por cada nivel se multiplica el puntaje por 2
+calcular_puntaje_NASM: ;edi=monedasColectadas --- esi=pasos --- edx=niveles | formula: cada moneda es un punto, por cada 50 pasos se resta una moneda y por cada nivel se suman 10 puntos
+    ;mover parametros a registros de proposito general
+     mov r8d, edi ;monedas
+     mov r9d, esi ;pasos
+     mov r10d, edx ;niveles
+
     ;calcular lo que se resta por pasos
     xor eax, eax
     xor edx, edx
-    mov eax,esi
-    mov ecx, 30
-    div ecx
+    mov eax, r9d ;eax = pasos
+    mov ecx, 30 ;ecx = 30
+    div ecx ;eax = pasos/30
+    cmp eax, r8d ;si el puntaje queda negativo solo lo  hace 0
+    jg .hacerCero
 
-    sub edi,eax
+    sub r8d, eax ;rd8 = puntaje -= eax
 
-    ;calcular multiplicador por niveles
-    xor eax, eax
-    xor edx, edx
-    mov eax,2
-    mul edx
-    ;aplicar multiplicador
-    mul edi
-    mov eax, edi
+    .hacerCero:
+        xor r8d, r8d
+
+    ;calcular puntos extra por nivel
+    mov eax, r10d ;eax = niveles
+    mov ecx, 10 ;exc = 100;
+    mul ecx ;eax = niveles * 50
+
+    ;aplicar puntos extra
+    add r8d, eax
+    mov eax, r8d
 
     ret
 ;;---------------------------------------------------------------------------;;

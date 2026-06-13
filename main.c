@@ -6,7 +6,7 @@
 #include <termios.h>
 #include <unistd.h>
 #include <stdbool.h>
-//nasm -f elf64 rutinas.asm -o rutinas.o && gcc -c main.c -o main.o && gcc main.o rutinas.o -o juego
+//nasm -f elf64 rutinas.asm -o rutinas.o && gcc -c main.c -o main.o && gcc main.o rutinas.o -o bitq
 //nasm -f elf64 rutinas.asm -o rutinas.o
 //gcc -c main.c -o main.o
 //gcc main.o rutinas.o -o juego
@@ -37,7 +37,8 @@ int jugador_posY = 2;
 int monedas_totales = 0;
 int monedas_colectadas = 0;
 int total_pasos = 0;
-int niveles_completados = 0;
+int niveles_completados = 1;
+int puntaje = 0;
 
 int zona_top = 0;
 int zona_fondo = 20;
@@ -247,8 +248,10 @@ int main()
     dibujar_mapa(mapa1);
   }
   tb_shutdown();
+  
+  puntaje = calcular_puntaje_NASM(monedas_colectadas,total_pasos,niveles_completados);
+  printf("\n\nmt: %i\nmc: %i\npuntj: %i\n",monedas_totales,monedas_colectadas,puntaje);
 
-  printf("\n\nmt: %i\nmc: %i\n",monedas_totales,monedas_colectadas);
 }
 //-----------------------------------------------------------------------------------------------------------------------//
 void dibujar_mapa(char mapa[MAPA_FILAS][MAPA_COLUMNAS])
@@ -321,6 +324,8 @@ void caminar(char mapa[MAPA_FILAS][MAPA_COLUMNAS])
       } 
     }
   }
+
+  total_pasos++;
 
   //si es una pared, no se mueve a la nueva direccion
   if(validar_movimiento_NASM(&mapa[0][0],MAPA_COLUMNAS,sig_JPosY,sig_JPosX))
