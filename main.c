@@ -68,9 +68,9 @@ char mapa1 [MAPA_FILAS][MAPA_COLUMNAS] =
     {'#',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ','#'},
     {'#',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ','#'},
     {'#',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ','$','#'},
-    {'#','#','#','#','#','#','#','#','#','#','#','#','#','#','#','#','#','#','#','#'},
+    {'#','#','#','O','#','#','#','O','#','#','#','#','#','#','#','#','#','#','#','#'},
 
-    {'2','#','#','#','#','#','#','#','#','#','#','#','#','#','#','#','#','#','#','#'},
+    {'2','#','#','0','#','#','#','0','#','#','#','#','#','#','#','#','#','#','#','#'},
     {'#',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ','#'},
     {'#',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ','#'},
     {'#',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ','#'},
@@ -369,6 +369,22 @@ void caminar(char mapa[MAPA_FILAS][MAPA_COLUMNAS])
     //poner al jugador en la posicion inicial de la zona
     jugador_posX = 18;
     jugador_posY -= 20*3;
+    break;
+
+  case 'O': //retroceder de zona en vertical
+    //reajustar limites
+    zona_top += 20; 
+    zona_fondo += 20;
+    //poner al jugador en la posicion inicial de la zona
+    jugador_posY += 3;
+    break;
+
+  case '0': //avanzar de zona en vertical
+    //reajustar limites
+    zona_top -= 20;
+    zona_fondo -= 20;
+    //poner al jugador en la posicion inicial de la zona
+    jugador_posY -= 3;
     break;
 
   default:
