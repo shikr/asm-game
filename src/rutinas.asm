@@ -1,14 +1,11 @@
 bits 64
 default rel
 
-global contar_monedas_NASM
-global validar_movimiento_NASM
-global calcular_puntaje_NASM
-global detectar_objeto_NASM
+global count_coins, validate_movement, get_score, detect_object
 section .text
 
 ;;---------------------------------------------------------------------------;;
-contar_monedas_NASM: ;esi=totalCeldas --- dl=monedaChar --- rdi=inicioMapa
+count_coins: ;esi=totalCeldas --- dl=monedaChar --- rdi=inicioMapa
     xor eax, eax ;contador de monedas
     xor ecx, ecx ;contador para recorrer la matriz
 
@@ -31,7 +28,7 @@ contar_monedas_NASM: ;esi=totalCeldas --- dl=monedaChar --- rdi=inicioMapa
     .fin:
         ret
 ;;---------------------------------------------------------------------------;;
-validar_movimiento_NASM: ;rdi=inicioMapa --- esi=columnas --- edx=nuevaFila --- ecx=nuevaColumna
+validate_movement: ;rdi=inicioMapa --- esi=columnas --- edx=nuevaFila --- ecx=nuevaColumna
     ;calcular el offset de la nueva posicion (nuevaFila * columnas)+nuevaColumna
     mov eax, edx
     imul eax, esi
@@ -43,13 +40,13 @@ validar_movimiento_NASM: ;rdi=inicioMapa --- esi=columnas --- edx=nuevaFila --- 
     je .true ;si si es devuelve 1
 
     mov eax,0 ;si no, devuelve 0
-    ret 
+    ret
 
     .true:
         mov eax,1
         ret
 ;;---------------------------------------------------------------------------;;
-calcular_puntaje_NASM: ;edi=monedasColectadas --- esi=pasos --- edx=niveles | formula: cada moneda es un punto, por cada 50 pasos se resta una moneda y por cada nivel se suman 10 puntos
+get_score: ;edi=monedasColectadas --- esi=pasos --- edx=niveles | formula: cada moneda es un punto, por cada 50 pasos se resta una moneda y por cada nivel se suman 10 puntos
     ;mover parametros a registros de proposito general
      mov r8d, edi ;monedas
      mov r9d, esi ;pasos
@@ -80,7 +77,7 @@ calcular_puntaje_NASM: ;edi=monedasColectadas --- esi=pasos --- edx=niveles | fo
         xor r8d, r8d
         ret
 ;;---------------------------------------------------------------------------;;
-detectar_objeto_NASM: ;rdi=inicioMapa --- esi=columnas --- edx=Fila --- ecx=Columna --- r8d=objeto
+detect_object: ;rdi=inicioMapa --- esi=columnas --- edx=Fila --- ecx=Columna --- r8d=objeto
     ;calcular el offset de la nueva posicion (nuevaFila * columnas)+nuevaColumna
     mov eax, edx
     imul eax, esi
