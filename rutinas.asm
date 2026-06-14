@@ -61,13 +61,10 @@ calcular_puntaje_NASM: ;edi=monedasColectadas --- esi=pasos --- edx=niveles | fo
     mov eax, r9d ;eax = pasos
     mov ecx, 100 ;ecx = 100
     div ecx ;eax = pasos/100
-    cmp eax, r8d ;si el puntaje queda negativo solo lo  hace 0
+    cmp eax, r8d ;si el puntaje queda negativo solo lo hace 0
     jg .hacerCero
 
     sub r8d, eax ;rd8 = puntaje -= eax
-
-    .hacerCero:
-        xor r8d, r8d
 
     ;calcular puntos extra por nivel
     mov eax, r10d ;eax = niveles
@@ -77,8 +74,11 @@ calcular_puntaje_NASM: ;edi=monedasColectadas --- esi=pasos --- edx=niveles | fo
     ;aplicar puntos extra
     add r8d, eax
     mov eax, r8d
-
     ret
+
+    .hacerCero:
+        xor r8d, r8d
+        ret
 ;;---------------------------------------------------------------------------;;
 detectar_objeto_NASM: ;rdi=inicioMapa --- esi=columnas --- edx=Fila --- ecx=Columna --- r8d=objeto
     ;calcular el offset de la nueva posicion (nuevaFila * columnas)+nuevaColumna

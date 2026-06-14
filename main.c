@@ -38,7 +38,7 @@ int jugador_posY = 4;
 int monedas_totales = 0;
 int monedas_colectadas = 0;
 int total_pasos = 0;
-int niveles_completados = 1;
+int niveles_completados = 0;
 int puntaje = 0;
 
 int zona_top = 0;
@@ -332,7 +332,7 @@ void caminar(char mapa[MAPA_FILAS][MAPA_COLUMNAS])
 
   total_pasos++;
 
-  //si es una pared, no hace nada
+  //si es una pared no hace nada
   if(validar_movimiento_NASM(&mapa[0][0],MAPA_COLUMNAS,sig_JPosY,sig_JPosX))
   {
     return;
