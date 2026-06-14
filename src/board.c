@@ -96,6 +96,18 @@ void step(struct GameState *gs, int *finished) {
     // poner al jugador en la posicion inicial de la zona
     gs->player.y += 3;
   }
+
+  if (detect_object(gs->map[0], SECTION_SIZE, next_y_pos, next_x_pos, 'K')) {
+    gs->unlocked = 1;
+    gs->player.x = next_x_pos;
+    gs->player.y = next_y_pos;
+  }
+
+  if (detect_object(gs->map[0], SECTION_SIZE, next_y_pos, next_x_pos, 'E')) {
+    if (gs->unlocked) {
+      *finished = 1;
+    }
+  }
 }
 
 void draw_map(struct GameState gs) {
@@ -135,6 +147,8 @@ void draw_map(struct GameState gs) {
 
       if (i == gs.player.y && j == gs.player.x) {
         tb_set_cell(px, py, 'P', TB_WHITE, TB_DEFAULT);
+      } else if (gs.map[i][j] == 'K') {
+        tb_set_cell(px, py, 'K', gs.unlocked ? TB_YELLOW : TB_RED, TB_DEFAULT);
       } else {
         tb_set_cell(px, py, gs.map[i][j], TB_GREEN, TB_DEFAULT);
       }
