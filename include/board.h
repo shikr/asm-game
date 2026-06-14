@@ -14,6 +14,7 @@ struct GameState {
   int coins_collected;
   int step_count;
   int level;
+  int unlocked;
   struct Player player;
 };
 

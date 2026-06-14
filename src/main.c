@@ -7,13 +7,14 @@
 #include <stdio.h>
 
 int main() {
-  int coins_count = count_coins(LEVEL_1[0], MAP_AREA * SECTION_SIZE, '$');
+  int coins = count_coins(LEVEL_1[0], MAP_AREA * SECTION_SIZE, '$');
 
   struct GameState game_state = {
       .map = LEVEL_1,
       .coins_collected = 0,
       .step_count = 0,
       .level = 1,
+      .unlocked = 0,
       .player = {.x = 5, .y = 4},
   };
 
@@ -29,6 +30,6 @@ int main() {
 
   int score = get_score(game_state.coins_collected, game_state.step_count,
                         game_state.level - 1);
-  printf("\n\nmt: %i\nmc: %i\npuntj: %i\n", coins_count,
-         game_state.coins_collected, score);
+  printf("\n\nmt: %i\nmc: %i\npuntj: %i\n", coins, game_state.coins_collected,
+         score);
 }
