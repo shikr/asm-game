@@ -4,6 +4,7 @@ default rel
 global contar_monedas_NASM
 global validar_movimiento_NASM
 global calcular_puntaje_NASM
+global detectar_objeto_NASM
 section .text
 
 ;;---------------------------------------------------------------------------;;
@@ -78,4 +79,22 @@ calcular_puntaje_NASM: ;edi=monedasColectadas --- esi=pasos --- edx=niveles | fo
     mov eax, r8d
 
     ret
+;;---------------------------------------------------------------------------;;
+detectar_objeto_NASM: ;rdi=inicioMapa --- esi=columnas --- edx=Fila --- ecx=Columna --- r8d=objeto
+    ;calcular el offset de la nueva posicion (nuevaFila * columnas)+nuevaColumna
+    mov eax, edx
+    imul eax, esi
+    add eax, ecx
+
+    ;guarda el caracter en al
+    mov al, [rdi+rax]
+    cmp al, r8b ;checa si es el objeto
+    je .true ;si si es devuelve 1
+
+    mov eax,0 ;si no, devuelve 0
+    ret
+
+    .true:
+        mov eax,1
+        ret
 ;;---------------------------------------------------------------------------;;

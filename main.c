@@ -29,6 +29,7 @@ void cambiar_de_zona(char mapa[MAPA_FILAS][MAPA_COLUMNAS]);
 int contar_monedas_NASM(char *inicioMapa,int totalCeldas,char monedaChar);
 bool validar_movimiento_NASM(char *inicioMapa,int totalColumnas,int nueva_fila,int nueva_columna);
 int calcular_puntaje_NASM(int monedas_colectadas,int total_pasos, int niveles_completados);
+bool detectar_objeto_NASM(char *inicioMapa,int totalColumnas,int nueva_fila,int nueva_columna, char objeto);
 
 //variables
 int win = 0;
@@ -59,7 +60,7 @@ char mapa1 [MAPA_FILAS][MAPA_COLUMNAS] =
     {'#',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ','>'},
     {'#',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ','#'},
     {'#',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ','#'},
-    {'#',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ','>',' ','#'},
+    {'#',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ','#'},
     {'#',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ','#'},
     {'#',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ','#'},
     {'#',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ','#'},
@@ -76,8 +77,8 @@ char mapa1 [MAPA_FILAS][MAPA_COLUMNAS] =
     {'#',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ','#'},
     {'#',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ','#'},
     {'#',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ','#'},
-    {'<',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ','#'},
     {'#',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ','#'},
+    {'<',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ','#'},
     {'#',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ','#'},
     {'#',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ','#'},
     {'#',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ','#'},
@@ -119,8 +120,8 @@ char mapa1 [MAPA_FILAS][MAPA_COLUMNAS] =
     {'#',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ','#'},
     {'#',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ','#'},
     {'#',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ','#'},
-    {'#',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ','#'},
     {'<',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ','#'},
+    {'#',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ','#'},
     {'#',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ','#'},
     {'#',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ','#'},
     {'#',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ',' ','#'},
@@ -331,64 +332,63 @@ void caminar(char mapa[MAPA_FILAS][MAPA_COLUMNAS])
 
   total_pasos++;
 
-  //si es una pared, no se mueve a la nueva direccion
+  //si es una pared, no hace nada
   if(validar_movimiento_NASM(&mapa[0][0],MAPA_COLUMNAS,sig_JPosY,sig_JPosX))
   {
     return;
   }
 
   //si no es pared, entonces checar que es 
-  switch (mapa[sig_JPosY][sig_JPosX])
+  if (detectar_objeto_NASM(&mapa[0][0],MAPA_COLUMNAS,sig_JPosY,sig_JPosX,'$'))
   {
-
-  case '$':
     monedas_colectadas++;
     mapa[sig_JPosY][sig_JPosX] = ' ';
     jugador_posX = sig_JPosX;
     jugador_posY = sig_JPosY;
-    break;
-
-  case ' ':
+  }
+  
+  if (detectar_objeto_NASM(&mapa[0][0],MAPA_COLUMNAS,sig_JPosY,sig_JPosX,' '))
+  {
     jugador_posX = sig_JPosX;
     jugador_posY = sig_JPosY;
-    break;
+  }
 
-  case '>': //avanzar de zona en horizontal
+  if (detectar_objeto_NASM(&mapa[0][0],MAPA_COLUMNAS,sig_JPosY,sig_JPosX,'>'))
+  {
     //reajustar limites
     zona_top += 20*3;
     zona_fondo += 20*3;
     //poner al jugador en la posicion inicial de la zona
     jugador_posX = 1;
     jugador_posY += 20*3;
-    break;
+  }
 
-  case '<': //retroceder de zona en horizontal
+  if (detectar_objeto_NASM(&mapa[0][0],MAPA_COLUMNAS,sig_JPosY,sig_JPosX,'<'))
+  {
     //reajustar limites
     zona_top -= 20*3; 
     zona_fondo -= 20*3;
     //poner al jugador en la posicion inicial de la zona
     jugador_posX = 18;
     jugador_posY -= 20*3;
-    break;
+  }
 
-  case 'O': //retroceder de zona en vertical
-    //reajustar limites
-    zona_top += 20; 
-    zona_fondo += 20;
-    //poner al jugador en la posicion inicial de la zona
-    jugador_posY += 3;
-    break;
-
-  case '0': //avanzar de zona en vertical
+  if (detectar_objeto_NASM(&mapa[0][0],MAPA_COLUMNAS,sig_JPosY,sig_JPosX,'0'))
+  {
     //reajustar limites
     zona_top -= 20;
     zona_fondo -= 20;
     //poner al jugador en la posicion inicial de la zona
     jugador_posY -= 3;
-    break;
+  }
 
-  default:
-    break;
+  if (detectar_objeto_NASM(&mapa[0][0],MAPA_COLUMNAS,sig_JPosY,sig_JPosX,'O'))
+  {
+    //reajustar limites
+    zona_top += 20; 
+    zona_fondo += 20;
+    //poner al jugador en la posicion inicial de la zona
+    jugador_posY += 3;
   }
 }
 //-----------------------------------------------------------------------------------------------------------------------//
