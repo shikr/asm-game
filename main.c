@@ -263,25 +263,47 @@ void dibujar_mapa(char mapa[MAPA_FILAS][MAPA_COLUMNAS])
 {
   tb_clear();
 
+  //sacar tamaño de al terminal
+  int ancho_terminal = tb_width();
+  int alto_terminal  = tb_height();
+  //sacar medidas del mapa
+  int ancho_mapa = MAPA_COLUMNAS*2; //*2 para que se centre bien pq al mostrar el mapa se le suma al offset x*2 para que no se vea todo junto
+  int alto_mapa  = zona_fondo - zona_top;
+  //sacar el offset
+  int offsetX = (ancho_terminal - ancho_mapa) / 2;
+  int offsetY = (alto_terminal  - alto_mapa) / 2;
+  //que el offset minimo sea 0,0 por si se achica la terminal
+  if (offsetX < 0)
+  {
+    offsetX = 0;
+  }
+  if (offsetY < 0) 
+  {
+    offsetY = 0;
+  }
+
   int x = 0;
   int y = 0;
 
   //recorrer e imprimir una seccion de 20x20 del mapa 
-  for (int i = zona_top; i < zona_fondo; i++) //recorre las primeras 20 filas de la seccion
+  for (int i = zona_top; i < zona_fondo; i++)
   {
-    for (int j = 0; j < MAPA_COLUMNAS; j++) //recorre las 20 columnas de la seccion
+    for (int j = 0; j < MAPA_COLUMNAS; j++)
     {
-      if (i==jugador_posY && j==jugador_posX)
+      int px = offsetX + x*2;
+      int py = offsetY + y;
+
+      if (i == jugador_posY && j == jugador_posX)
       {
-        tb_set_cell(x*2,y,'P',TB_WHITE,TB_DEFAULT);
+        tb_set_cell(px, py, 'P', TB_WHITE, TB_DEFAULT);
       }
       else
       {
-        tb_set_cell(x*2,y,mapa[i][j],TB_GREEN,TB_DEFAULT);
+        tb_set_cell(px, py, mapa[i][j], TB_GREEN, TB_DEFAULT);
       }
       x++;
     }
-    x=0;
+    x = 0;
     y++;
   }
   tb_present();
