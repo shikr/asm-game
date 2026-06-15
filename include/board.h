@@ -1,8 +1,6 @@
 #pragma once
 
-#define SECTION_SIZE 20
-#define SECTION_COUNT 9
-#define MAP_AREA (SECTION_SIZE * SECTION_COUNT)
+#include "levels.h"
 
 struct Player {
   int x;
@@ -16,7 +14,11 @@ struct GameState {
   int level;
   int unlocked;
   struct Player player;
+  int top_position;
+  int bottom_position;
 };
 
 void step(struct GameState *gs, int *finished);
 void draw_map(struct GameState gs);
+
+extern struct Player positions[LEVEL_COUNT];

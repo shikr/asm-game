@@ -2,9 +2,6 @@
 #include "movement.h"
 #include "termbox2.h"
 
-int top_position = 0;
-int bottom_position = SECTION_SIZE;
-
 void step(struct GameState *gs, int *finished) {
   struct tb_event ev;
   int next_x_pos = gs->player.x;
@@ -65,8 +62,8 @@ void step(struct GameState *gs, int *finished) {
 
   if (detect_object(gs->map[0], SECTION_SIZE, next_y_pos, next_x_pos, '>')) {
     // reajustar limites
-    top_position += 20 * 3;
-    bottom_position += 20 * 3;
+    gs->top_position += 20 * 3;
+    gs->bottom_position += 20 * 3;
     // poner al jugador en la posicion inicial de la zona
     gs->player.x = 1;
     gs->player.y += 20 * 3;
@@ -74,8 +71,8 @@ void step(struct GameState *gs, int *finished) {
 
   if (detect_object(gs->map[0], SECTION_SIZE, next_y_pos, next_x_pos, '<')) {
     // reajustar limites
-    top_position -= 20 * 3;
-    bottom_position -= 20 * 3;
+    gs->top_position -= 20 * 3;
+    gs->bottom_position -= 20 * 3;
     // poner al jugador en la posicion inicial de la zona
     gs->player.x = 18;
     gs->player.y -= 20 * 3;
@@ -83,16 +80,16 @@ void step(struct GameState *gs, int *finished) {
 
   if (detect_object(gs->map[0], SECTION_SIZE, next_y_pos, next_x_pos, '0')) {
     // reajustar limites
-    top_position -= 20;
-    bottom_position -= 20;
+    gs->top_position -= 20;
+    gs->bottom_position -= 20;
     // poner al jugador en la posicion inicial de la zona
     gs->player.y -= 3;
   }
 
   if (detect_object(gs->map[0], SECTION_SIZE, next_y_pos, next_x_pos, 'O')) {
     // reajustar limites
-    top_position += 20;
-    bottom_position += 20;
+    gs->top_position += 20;
+    gs->bottom_position += 20;
     // poner al jugador en la posicion inicial de la zona
     gs->player.y += 3;
   }
@@ -120,7 +117,7 @@ void draw_map(struct GameState gs) {
   int ancho_mapa =
       SECTION_SIZE * 2; //*2 para que se centre bien pq al mostrar el mapa se
                         // le suma al offset x*2 para que no se vea todo junto
-  int alto_mapa = bottom_position - top_position;
+  int alto_mapa = gs.bottom_position - gs.top_position;
   // sacar el offset
   int offsetX = (ancho_terminal - ancho_mapa) / 2;
   int offsetY = (alto_terminal - alto_mapa) / 2;
@@ -132,6 +129,17 @@ void draw_map(struct GameState gs) {
     offsetY = 0;
   }
 
+  // clamp viewport to actual map bounds
+  int map_max_row = MAP_AREA;
+  if (gs.top_position < 0)
+    gs.top_position = 0;
+  if (gs.top_position >= map_max_row)
+    gs.top_position = map_max_row - SECTION_SIZE;
+  if (gs.bottom_position > map_max_row)
+    gs.bottom_position = map_max_row;
+  if (gs.bottom_position <= gs.top_position)
+    gs.bottom_position = gs.top_position + SECTION_SIZE;
+
   // imprimir HUD
   tb_printf(2, 0, TB_WHITE, TB_DEFAULT, "monedas: %d", gs.coins_collected);
   tb_printf(40, 0, TB_YELLOW, TB_DEFAULT, "Mapa: %d", 1);
@@ -140,7 +148,7 @@ void draw_map(struct GameState gs) {
   int x = 0;
   int y = 0;
 
-  for (int i = top_position; i < bottom_position; i++) {
+  for (int i = gs.top_position; i < gs.bottom_position; i++) {
     for (int j = 0; j < SECTION_SIZE; j++) {
       int px = offsetX + x * 2;
       int py = offsetY + y;
@@ -159,3 +167,9 @@ void draw_map(struct GameState gs) {
   }
   tb_present();
 }
+
+struct Player positions[LEVEL_COUNT] = {
+    {.x = 5, .y = 4}, // Nivel 1
+    {.x = 5, .y = 4}, // Nivel 2
+    {.x = 5, .y = 1}, // Nivel 3
+};
