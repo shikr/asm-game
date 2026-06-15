@@ -2,7 +2,7 @@
 #include "movement.h"
 #include "termbox2.h"
 
-void step(struct GameState *gs, int *finished) {
+void step(struct GameState *gs, int *completed, int *finished) {
   struct tb_event ev;
   int next_x_pos = gs->player.x;
   int next_y_pos = gs->player.y;
@@ -40,12 +40,12 @@ void step(struct GameState *gs, int *finished) {
     }
   }
 
-  gs->step_count++;
-
   // si es una pared no hace nada
   if (validate_movement(gs->map[0], SECTION_SIZE, next_y_pos, next_x_pos)) {
     return;
   }
+
+  gs->step_count++;
 
   // si no es pared, entonces checar que es
   if (detect_object(gs->map[0], SECTION_SIZE, next_y_pos, next_x_pos, '$')) {
@@ -102,7 +102,7 @@ void step(struct GameState *gs, int *finished) {
 
   if (detect_object(gs->map[0], SECTION_SIZE, next_y_pos, next_x_pos, 'E')) {
     if (gs->unlocked) {
-      *finished = 1;
+      *completed = 1;
     }
   }
 }
@@ -129,7 +129,6 @@ void draw_map(struct GameState gs) {
     offsetY = 0;
   }
 
-  // clamp viewport to actual map bounds
   int map_max_row = MAP_AREA;
   if (gs.top_position < 0)
     gs.top_position = 0;

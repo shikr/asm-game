@@ -18,7 +18,7 @@ struct GameState {
   int bottom_position;
 };
 
-void step(struct GameState *gs, int *finished);
+void step(struct GameState *gs, int *completed, int *finished);
 void draw_map(struct GameState gs);
 
 extern struct Player positions[LEVEL_COUNT];
