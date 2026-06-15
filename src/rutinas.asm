@@ -15,8 +15,8 @@ count_coins: ;esi=totalCeldas --- dl=monedaChar --- rdi=inicioMapa
         jge .fin
 
         ;ve si el caracter es el de la moneda
-        mov bl, [rdi + rcx]
-        cmp bl, dl
+        mov r10b, [rdi + rcx]
+        cmp r10b, dl
         jne .siguiente ;si no es igual pasa a el siguiente caracter
 
         inc eax ;si si es igual incrementa el numero de monedas
