@@ -11,6 +11,13 @@ Este proyecto es un juego de laberinto desarrollado usando C y NASM. El objetivo
 
 ## Compilación
 
+Lo primero es obtener el código fuente del proyecto. Puedes clonar el repositorio, junto a sus **dependencias**, usando el siguiente comando:
+
+```bash
+git clone --recurse-submodules https://github.com/shikr/asm-game.git
+cd asm-game
+```
+
 Para compilar el juego, simplemente ejecuta el siguiente comando en la terminal:
 
 ```bash
