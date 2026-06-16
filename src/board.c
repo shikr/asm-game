@@ -140,8 +140,10 @@ void draw_map(struct GameState gs) {
     gs.bottom_position = gs.top_position + SECTION_SIZE;
 
   // imprimir HUD
-  tb_printf(2, 0, TB_WHITE, TB_DEFAULT, "monedas: %d", gs.coins_collected);
-  tb_printf(40, 0, TB_YELLOW, TB_DEFAULT, "Mapa: %d", 1);
+  tb_printf(2, 0, TB_WHITE, TB_DEFAULT, "Monedas: %d", gs.coins_collected);
+  tb_printf(40, 0, TB_YELLOW, TB_DEFAULT, "Nivel: %d", gs.level);
+  tb_printf(60, 0, TB_CYAN, TB_DEFAULT, "Desbloqueado: %s",
+            gs.unlocked ? "Sí" : "No");
 
   // recorrer e imprimir una seccion de 20x20 del mapa
   int x = 0;
@@ -169,6 +171,6 @@ void draw_map(struct GameState gs) {
 
 struct Player positions[LEVEL_COUNT] = {
     {.x = 5, .y = 4}, // Nivel 1
-    {.x = 5, .y = 4}, // Nivel 2
+    {.x = 4, .y = 4}, // Nivel 2
     {.x = 5, .y = 1}, // Nivel 3
 };
