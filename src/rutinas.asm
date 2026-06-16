@@ -1,7 +1,7 @@
 bits 64
 default rel
 
-global count_coins, validate_movement, get_score, detect_object
+global count_coins, validate_movement, get_score, detect_object, count_empty
 section .text
 
 ;;---------------------------------------------------------------------------;;
@@ -95,3 +95,26 @@ detect_object: ;rdi=inicioMapa --- esi=columnas --- edx=Fila --- ecx=Columna ---
         mov eax,1
         ret
 ;;---------------------------------------------------------------------------;;
+
+count_empty: ;esi=totalCeldas --- rdi=inicioMapa
+    xor eax, eax ;contador de espacios vacios
+    xor ecx, ecx ;contador para recorrer la matriz
+
+    .bucle:
+        ;ve si ya llego al final de la matriz
+        cmp ecx, esi
+        jge .fin
+
+        ;ve si el caracter es el de espacio vacio
+        mov r10b, [rdi + rcx]
+        cmp r10b, ' ' ;espacio vacio
+        jne .siguiente ;si no es igual pasa a el siguiente caracter
+
+        inc eax ;si si es igual incrementa el numero de espacios vacios
+
+    .siguiente:
+        inc ecx
+        jmp .bucle
+
+    .fin:
+        ret
