@@ -6,14 +6,18 @@
 #include "score.h"
 #include <stdio.h>
 
-void wait_for_keypress() {
+//-------------------------------------------------------------------------------------//
+void wait_for_keypress()
+{
   struct tb_event ev;
-  do {
+  do
+  {
     tb_poll_event(&ev);
   } while (ev.type != TB_EVENT_KEY);
 }
-
-int main() {
+//-------------------------------------------------------------------------------------//
+int main()
+{
   int coins_count = 0;
   int coins_collected = 0;
   int step_count = 0;
@@ -22,7 +26,8 @@ int main() {
 
   tb_init();
 
-  for (int i = 0; i < LEVEL_COUNT; i++) {
+  for (int i = 0; i < LEVEL_COUNT; i++)
+  {
     struct GameState game_state = {
         .map = i == 0 ? LEVEL_1 : (i == 1 ? LEVEL_2 : LEVEL_3),
         .coins_collected = 0,
@@ -36,7 +41,8 @@ int main() {
 
     int completed = 0;
 
-    while (!completed && !finished) {
+    while (!completed && !finished)
+    {
       draw_map(game_state);
       step(&game_state, &completed, &finished);
     }
@@ -49,7 +55,9 @@ int main() {
     tb_clear();
 
     if (finished)
+    {
       break;
+    }
 
     // mostrar resultados en el centro de la pantalla
     char msg[] = "Nivel completado! Presiona cualquier tecla para continuar...";
@@ -61,20 +69,20 @@ int main() {
     int msg_y = (term_height - 3) / 2;
 
     tb_print(msg_x, msg_y, TB_WHITE, TB_DEFAULT, msg);
-    tb_printf(msg_x, msg_y + 1, TB_WHITE, TB_DEFAULT,
-              "Monedas recolectadas: %d / %d", game_state.coins_collected,
-              coins);
-    tb_printf(msg_x, msg_y + 2, TB_WHITE, TB_DEFAULT, "Pasos: %d",
-              game_state.step_count);
+    tb_printf(msg_x, msg_y + 1, TB_WHITE, TB_DEFAULT,"Monedas recolectadas: %d / %d", game_state.coins_collected,coins);
+    tb_printf(msg_x, msg_y + 2, TB_WHITE, TB_DEFAULT, "Pasos: %d",game_state.step_count);
     tb_present();
     wait_for_keypress();
   }
 
-  if (finished) {
+  if (finished)
+  {
     tb_shutdown();
 
     printf("Juego terminado por el jugador. Gracias por jugar!\n");
-  } else {
+  }
+  else
+  {
     tb_clear();
 
     char msg[] = "¡Felicidades! Has completado todos los niveles.";
@@ -87,16 +95,11 @@ int main() {
     int msg_y = (term_height - 6) / 2;
 
     tb_print(msg_x, msg_y, TB_WHITE, TB_DEFAULT, msg);
-    tb_printf(msg_x, msg_y + 1, TB_WHITE, TB_DEFAULT, "Monedas: %d / %d",
-              coins_collected, coins_count);
-    tb_printf(msg_x, msg_y + 2, TB_WHITE, TB_DEFAULT, "Pasos totales: %d",
-              step_count);
-    tb_printf(msg_x, msg_y + 3, TB_WHITE, TB_DEFAULT, "Niveles completados: %d",
-              LEVEL_COUNT);
-    tb_printf(msg_x, msg_y + 4, TB_WHITE, TB_DEFAULT, "Puntaje final: %d",
-              score);
-    tb_print(msg_x, msg_y + 5, TB_WHITE, TB_DEFAULT,
-             "Presiona cualquier tecla para continuar...");
+    tb_printf(msg_x, msg_y + 1, TB_WHITE, TB_DEFAULT, "Monedas: %d / %d",coins_collected, coins_count);
+    tb_printf(msg_x, msg_y + 2, TB_WHITE, TB_DEFAULT, "Pasos totales: %d",step_count);
+    tb_printf(msg_x, msg_y + 3, TB_WHITE, TB_DEFAULT, "Niveles completados: %d",LEVEL_COUNT);
+    tb_printf(msg_x, msg_y + 4, TB_WHITE, TB_DEFAULT, "Puntaje final: %d",score);
+    tb_print(msg_x, msg_y + 5, TB_WHITE, TB_DEFAULT,"Presiona cualquier tecla para continuar...");
     tb_present();
 
     wait_for_keypress();
@@ -104,3 +107,4 @@ int main() {
     tb_shutdown();
   }
 }
+//-------------------------------------------------------------------------------------//

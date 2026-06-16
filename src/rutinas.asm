@@ -46,7 +46,7 @@ validate_movement: ;rdi=inicioMapa --- esi=columnas --- edx=nuevaFila --- ecx=nu
         mov eax,1
         ret
 ;;---------------------------------------------------------------------------;;
-get_score: ;edi=monedasColectadas --- esi=pasos --- edx=niveles | formula: cada moneda es un punto, por cada 50 pasos se resta una moneda y por cada nivel se suman 10 puntos
+get_score: ;edi=monedasColectadas --- esi=pasos --- edx=niveles | formula: cada moneda es un punto, por cada 100 pasos se resta una moneda y por cada nivel se suman 10 puntos
     ;mover parametros a registros de proposito general
      mov r8d, edi ;monedas
      mov r9d, esi ;pasos
@@ -65,8 +65,8 @@ get_score: ;edi=monedasColectadas --- esi=pasos --- edx=niveles | formula: cada 
 
     ;calcular puntos extra por nivel
     mov eax, r10d ;eax = niveles
-    mov ecx, 10 ;exc = 100;
-    mul ecx ;eax = niveles * 50
+    mov ecx, 10
+    mul ecx
 
     ;aplicar puntos extra
     add r8d, eax
