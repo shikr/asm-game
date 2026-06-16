@@ -99,6 +99,8 @@ int main() {
              "Presiona cualquier tecla para continuar...");
     tb_present();
 
+    wait_for_keypress();
+
     tb_shutdown();
   }
 }
